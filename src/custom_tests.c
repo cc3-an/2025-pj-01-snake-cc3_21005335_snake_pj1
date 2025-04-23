@@ -108,38 +108,187 @@ bool test_is_vowel() {
 /* Task 4.1 */
 
 bool test_is_tail() {
-  // TODO: Implementar esta funcion
-  return true;
+    struct test_case {
+        char input;
+        bool expected;
+    } tests[] = {
+        {'w', true},
+        {'a', true},
+        {'s', true},
+        {'d', true},
+        {'W', false},
+        {' ', false},
+        {'*', false},
+        {'^', false}
+    };
+
+    for (size_t i = 0; i < sizeof(tests)/sizeof(tests[0]); i++) {
+        bool result = is_tail(tests[i].input);
+        if (!assert_equals_bool("is_tail", tests[i].expected, result)) {
+            return false;
+        }
+    }
+    return true;
 }
 
 bool test_is_head() {
-  // TODO: Implementar esta funcion
-  return true;
+  struct test_case {
+        char input;
+        bool expected;
+    } tests[] = {
+        {'W', true},
+        {'A', true},
+        {'S', true},
+        {'D', true},
+        {'x', true},
+        {'w', false},
+        {'^', false},
+        {'*', false}
+    };
+
+    for (size_t i = 0; i < sizeof(tests)/sizeof(tests[0]); i++) {
+        bool result = is_head(tests[i].input);
+        if (!assert_equals_bool("is_head", tests[i].expected, result)) {
+            return false;
+        }
+    }
+    return true;
 }
 
 bool test_is_snake() {
-  // TODO: Implementar esta funcion
-  return true;
+  struct test_case {
+        char input;
+        bool expected;
+    } tests[] = {
+        {'w', true},  // cola
+        {'a', true},  // cola
+        {'s', true},  // cola
+        {'d', true},  // cola
+        {'^', true},  // cuerpo
+        {'<', true},  // cuerpo
+        {'v', true},  // cuerpo
+        {'>', true},  // cuerpo
+        {'W', true},  // cabeza
+        {'A', true},  // cabeza
+        {'S', true},  // cabeza
+        {'D', true},  // cabeza
+        {'x', true},  // cabeza muerta
+        {' ', false}, // espacio vacío
+        {'#', false}, // pared
+        {'*', false}, // comida
+        {'@', false}  // carácter inválido
+    };
+
+    for (size_t i = 0; i < sizeof(tests)/sizeof(tests[0]); i++) {
+        bool result = is_snake(tests[i].input);
+        if (!assert_equals_bool("is_snake", tests[i].expected, result)) {
+            printf("Failed case: '%c'\n", tests[i].input);
+            return false;
+        }
+    }
+    return true;
 }
 
 bool test_body_to_tail() {
-  // TODO: Implementar esta funcion
-  return true;
+  struct test_case {
+        char input;
+        char expected;
+    } tests[] = {
+        {'^', 'w'},
+        {'<', 'a'},
+        {'v', 's'},
+        {'>', 'd'},
+        {'W', '?'},  // Comportamiento indefinido según especificación
+        {' ', '?'}
+    };
+
+    for (size_t i = 0; i < sizeof(tests)/sizeof(tests[0]); i++) {
+        char result = body_to_tail(tests[i].input);
+        if (!assert_equals_char("body_to_tail", tests[i].expected, result)) {
+            return false;
+        }
+    }
+    return true;
 }
 
 bool test_head_to_body() {
-  // TODO: Implement this function.
-  return true;
+  struct test_case {
+        char input;
+        char expected;
+    } tests[] = {
+        {'W', '^'},  // arriba
+        {'A', '<'},  // izquierda
+        {'S', 'v'},  // abajo
+        {'D', '>'},  // derecha
+        {'w', '?'},  // comportamiento indefinido (no es cabeza)
+        {'^', '?'},  // comportamiento indefinido (no es cabeza)
+        {'x', '?'},  // comportamiento indefinido (cabeza muerta)
+        {' ', '?'}   // comportamiento indefinido
+    };
+
+    for (size_t i = 0; i < sizeof(tests)/sizeof(tests[0]); i++) {
+        char result = head_to_body(tests[i].input);
+        if (!assert_equals_char("head_to_body", tests[i].expected, result)) {
+            printf("Failed case: '%c'\n", tests[i].input);
+            return false;
+        }
+    }
+    return true;
 }
 
 bool test_get_next_row() {
-  // TODO: Implement this function.
-  return true;
+  struct test_case {
+        unsigned int cur_row;
+        char input;
+        unsigned int expected;
+    } tests[] = {
+        {5, 'v', 6},
+        {5, 's', 6},
+        {5, 'S', 6},
+        {5, '^', 4},
+        {5, 'w', 4},
+        {5, 'W', 4},
+        {5, 'a', 5},
+        {5, '<', 5}
+    };
+
+    for (size_t i = 0; i < sizeof(tests)/sizeof(tests[0]); i++) {
+        unsigned int result = get_next_row(tests[i].cur_row, tests[i].input);
+        if (!assert_equals_unsigned_int("get_next_row", tests[i].expected, result)) {
+            return false;
+        }
+    }
+    return true;
 }
 
 bool test_get_next_col() {
-  // TODO: Implementar esta funcion
-  return true;
+  struct test_case {
+        unsigned int cur_col;
+        char input;
+        unsigned int expected;
+    } tests[] = {
+        {5, '>', 6},  // derecha
+        {5, 'd', 6},  // derecha (cola)
+        {5, 'D', 6},  // derecha (cabeza)
+        {5, '<', 4},  // izquierda
+        {5, 'a', 4},  // izquierda (cola)
+        {5, 'A', 4},  // izquierda (cabeza)
+        {0, '<', 0},  // borde izquierdo - no puede moverse más allá
+        {0, 'a', 0},  // borde izquierdo (cola)
+        {0, 'A', 0},  // borde izquierdo (cabeza)
+        {5, '^', 5},  // arriba (no afecta columna)
+        {5, 'v', 5}   // abajo (no afecta columna)
+    };
+
+    for (size_t i = 0; i < sizeof(tests)/sizeof(tests[0]); i++) {
+        unsigned int result = get_next_col(tests[i].cur_col, tests[i].input);
+        if (!assert_equals_unsigned_int("get_next_col", tests[i].expected, result)) {
+            printf("Failed case: cur_col=%u, input='%c'\n", 
+                   tests[i].cur_col, tests[i].input);
+            return false;
+        }
+    }
+    return true;
 }
 
 bool test_customs() {

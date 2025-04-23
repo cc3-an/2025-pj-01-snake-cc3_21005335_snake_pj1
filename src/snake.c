@@ -28,29 +28,30 @@ int main(int argc, char* argv[]) {
   // NO MODIFIQUEN NADA ARRIBA DE ESTA LINEA.
 
   /* Tarea 7 */
-
   // Leer el tablero de un archivo, o crear un tablero por defecto.
-  if (in_filename != NULL) {
-    // TODO: cargar el tablero de in_filename
-    // TODO: Si el archivo no existe, retornar -1
-    // TODO: Despues llamar a initialize_snakes en el estado creado
-  } else {
-    // TODO: Cargar el estado por defecto.
-  }
+    if (in_filename != NULL) {
+        state = load_board(in_filename);
+        if (state == NULL) {
+            return -1;
+        }
+        state = initialize_snakes(state);
+    } else {
+        state = create_default_state();
+    }
 
-  // TODO: Actualizar el estado. Utilizar la funcion deterministic_food
-  // (esta ya ha sido creada en snakes_utils.h) para agregar comida al
-  // tablero)
+    // Actualizar el estado del juego
+    update_state(state, deterministic_food);
 
-  // Write updated board to file or stdout
-  // Escribir el tablero actualizado al archivo o stdout
-  if (out_filename != NULL) {
-    // TODO: Guardar el tablero en out_filename
-  } else {
-    // TODO: Imprimir el tablero a stdout
-  }
+    // Escribir el tablero actualizado a un archivo o stdout
+    if (out_filename != NULL) {
+        save_board(state, out_filename);
+    } else {
+        print_board(state, stdout);
+    }
 
-  // TODO: Liberen el estado creado
+    // Liberar memoria
+    free_state(state);
 
-  return 0;
+    return 0;
 }
+
